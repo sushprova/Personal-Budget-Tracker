@@ -1,0 +1,11 @@
+.custom-footer {
+  background-color: #033c03;
+}
+
+.Sidebar .SidebarMenuButton a span {
+  font-size: inherit;
+}
+
+.SidebarGroupLabel {
+  font-size: inherit;
+}
