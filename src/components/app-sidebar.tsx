@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, Home, Plus, Search, Settings } from "lucide-react";
+import { Folder, Home, Plus, Search, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
 // import { usePathname } from "next/navigation";
 
 // import {
@@ -28,9 +29,9 @@ const items = [
     icon: Plus,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Category",
+    url: "/category",
+    icon: Folder,
   },
   {
     title: "Search",
@@ -44,13 +45,7 @@ const items = [
   },
 ];
 
-const pagesWithoutSidebar = ["/login", "/register"];
-// const pathname = usePathname();
-
 export default function AppSidebar() {
-  if (pagesWithoutSidebar.includes(window.location.pathname)) {
-    return null;
-  }
   return (
     <Sidebar>
       <SidebarContent className="bg-[#0d7263] text-white">

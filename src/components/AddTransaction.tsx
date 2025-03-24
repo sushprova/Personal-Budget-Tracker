@@ -66,6 +66,23 @@ export default function AddTransaction() {
         />
       </div>
 
+      <div className="mb-4">
+        <label
+          className="all-heading  block mb-2 "
+          style={{ fontSize: "1.3rem" }}
+        >
+          Category
+        </label>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as "credit" | "debit")}
+          className="w-full p-2 border rounded"
+        >
+          <option value="paycheck">Paycheck</option>
+          <option value="rent">Rent</option>
+        </select>
+      </div>
+
       <button
         type="submit"
         className="all-heading w-half bg-[#6ca9a0] text-[#0A4F45] py-2 px-4 rounded hover:bg-[#149e8a]"
