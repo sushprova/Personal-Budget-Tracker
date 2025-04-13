@@ -33,9 +33,9 @@ enum CategoryType {
 model Category {
   id          Int             @id @default(autoincrement())
   userId      Int
-  name        String
+  name        String          @unique
   createdAt   DateTime        @default(now())
-  type        CategoryType    // New field with enum type
+  type        CategoryType?    // New field with enum type
   user        User            @relation(fields: [userId], references: [id])
   transactions Transaction[]
 }

@@ -1,17 +1,31 @@
 "use client";
 import { Category } from "@prisma/client";
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function CategoriesPage() {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [newCategory, setNewCategory] = useState({ name: "", type: "debit" });
+  const [newCategory, setNewCategory] = useState<{
+    name: string;
+  }>({
+    name: "",
+  });
 
   // Fetch categories on page load
   useEffect(() => {
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data) => setCategories(data))
-      .catch((err) => console.error(err));
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/categories");
+        if (!res.ok) throw new Error("Failed to fetch categories");
+        const data = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchCategories();
   }, []);
 
   // Handle form submission for new category
@@ -19,19 +33,20 @@ export default function CategoriesPage() {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/categories/create", {
+      const res = await fetch("/api/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCategory),
+        body: JSON.stringify({
+          name: newCategory.name,
+          userId: user!.id,
+        }),
       });
 
-      if (res.ok) {
-        const createdCategory = await res.json();
-        setCategories([...categories, createdCategory]); // Update the state with the new category
-        setNewCategory({ name: "", type: "debit" }); // Reset the form
-      } else {
-        console.error("Failed to create category");
-      }
+      if (!res.ok) throw new Error("Failed to create category");
+
+      const createdCategory = await res.json();
+      setCategories((prevCategories) => [...prevCategories, createdCategory]); // Update state
+      setNewCategory({ name: "" }); // means if a user does not select, it will be debit by default
     } catch (error) {
       console.error(error);
     }
@@ -43,17 +58,15 @@ export default function CategoriesPage() {
 
       {/* Debit Section */}
       <div>
-        <h2 className="text-lg font-semibold">Debit Categories</h2>
+        <h2 className="text-lg font-semibold">Categories</h2>
         <ul>
-          {categories
-            .filter((category) => category.type === "debit")
-            .map((category) => (
-              <li key={category.id}>{category.name}</li>
-            ))}
+          {categories.map((category) => (
+            <li key={category.id}>{category.name}</li>
+          ))}
         </ul>
       </div>
 
-      {/* Credit Section */}
+      {/* Credit Section
       <div className="mt-4">
         <h2 className="text-lg font-semibold">Credit Categories</h2>
         <ul>
@@ -63,7 +76,7 @@ export default function CategoriesPage() {
               <li key={category.id}>{category.name}</li>
             ))}
         </ul>
-      </div>
+      </div> */}
 
       {/* Add New Category Form */}
       <form onSubmit={handleSubmit} className="mt-6">
@@ -78,16 +91,19 @@ export default function CategoriesPage() {
           className="border p-2 mb-2 w-full"
           required
         />
-        <select
+        {/* <select
           value={newCategory.type}
           onChange={(e) =>
-            setNewCategory({ ...newCategory, type: e.target.value })
+            setNewCategory({
+              ...newCategory,
+              type: e.target.value as "debit" | "credit",
+            })
           }
           className="border p-2 mb-2 w-full"
         >
           <option value="debit">Debit</option>
           <option value="credit">Credit</option>
-        </select>
+        </select> */}
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
           Add New
         </button>

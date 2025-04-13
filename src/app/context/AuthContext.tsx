@@ -24,8 +24,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user as User);
+        console.log("me found");
       } else {
         setUser(null);
+        console.log("me not found");
         // router.push("/login"); // Redirect if not logged in
       }
     }

@@ -1,16 +1,85 @@
 "use client";
 
-import { useState } from "react";
+import { useAuth } from "@/app/context/AuthContext";
+import { Category } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 export default function AddTransaction() {
-  const [type, setType] = useState<"credit" | "debit">("debit");
+  const [type, setType] = useState<"credit" | "debit" | "transfer ">("debit");
   const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState<number | null>(null); // Selected category state
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle transaction submission logic here
-    console.log({ type, amount, description });
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+        // console.log(data);
+        // different way to get the name cause categories array is of type string and not category
+        setCategories(data); // console.log(categories);
+        setCategoryId(data?.[0]?.id); // Set the first category as the default
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("handleSubmit triggered!", e); // Check if this prints
+    console.warn({
+      request: JSON.stringify({
+        type,
+        amount: parseFloat(amount),
+        categoryId,
+        description,
+        userId: user!.id,
+        date,
+      }),
+    });
+    try {
+      const response = await fetch("/api/transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type,
+          amount: parseFloat(amount),
+          categoryId,
+          description,
+          userId: user!.id,
+          date,
+        }),
+      });
+
+      const result = await response.json();
+      // console.log(result);
+
+      if (response.ok) {
+        console.log("Transaction added:", result);
+        alert("Transaction successfully added!");
+        // Reset form fields after successful submission
+        // setAmount("");
+        // setDescription("");
+        // setCategoryId(null);
+        // setDate("");
+      } else {
+        console.error("Error adding transaction:", result.message);
+        alert("Failed to add transaction. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,6 +98,7 @@ export default function AddTransaction() {
         >
           <option value="debit">Debit</option>
           <option value="credit">Credit</option>
+          <option value="transfer">Transfer</option>
         </select>
       </div>
 
@@ -54,14 +124,13 @@ export default function AddTransaction() {
           className="all-heading block mb-2"
           style={{ fontSize: "1.3rem" }}
         >
-          Description
+          Transaction Date
         </label>
         <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
           className="w-full p-2 border rounded"
-          placeholder="Enter description"
           required
         />
       </div>
@@ -74,21 +143,49 @@ export default function AddTransaction() {
           Category
         </label>
         <select
-          value={type}
-          onChange={(e) => setType(e.target.value as "credit" | "debit")}
+          value={categoryId ?? ""}
+          onChange={(e) => {
+            console.warn(e.target.value);
+            setCategoryId(+e.target.value);
+          }}
           className="w-full p-2 border rounded"
         >
-          <option value="paycheck">Paycheck</option>
-          <option value="rent">Rent</option>
+          {categories && categories.length > 0 ? (
+            categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading categories...</option>
+          )}
         </select>
+      </div>
+
+      <div className="mb-4">
+        <label
+          className="all-heading block mb-2"
+          style={{ fontSize: "1.3rem" }}
+        >
+          Description
+        </label>
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="Enter description"
+          required
+        />
       </div>
 
       <button
         type="submit"
         className="all-heading w-half bg-[#6ca9a0] text-[#0A4F45] py-2 px-4 rounded hover:bg-[#149e8a]"
         style={{ fontSize: "1.3rem" }}
+        disabled={loading}
       >
-        Add Transaction
+        {loading ? "Adding..." : "Add Transaction"}
       </button>
     </form>
   );
