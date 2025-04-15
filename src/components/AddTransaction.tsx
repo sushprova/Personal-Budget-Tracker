@@ -5,21 +5,28 @@ import { Category } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 export default function AddTransaction() {
-  const [type, setType] = useState<"credit" | "debit" | "transfer ">("debit");
+  const [type, setType] = useState<"credit" | "debit" | "transfer">("debit");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryId, setCategoryId] = useState<number | null>(null); // Selected category state
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, selectedHousehold } = useAuth();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("/api/categories");
+        if (!selectedHousehold) {
+          alert("Please select a household before adding a transaction.");
+          return;
+        }
+        console.log("Selected Household:", selectedHousehold);
+        const response = await fetch(
+          `/api/categories?householdId=${selectedHousehold!.id}`
+        );
         const data = await response.json();
-        // console.log(data);
+        // console.log("oyeeeee", data);
         // different way to get the name cause categories array is of type string and not category
         setCategories(data); // console.log(categories);
         setCategoryId(data?.[0]?.id); // Set the first category as the default
@@ -29,10 +36,10 @@ export default function AddTransaction() {
     };
 
     fetchCategories();
-  }, []);
+  }, [selectedHousehold]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("handleSubmit triggered!", e); // Check if this prints
+    console.log("handleSubmit triggered!", e);
     console.warn({
       request: JSON.stringify({
         type,
@@ -60,7 +67,7 @@ export default function AddTransaction() {
       });
 
       const result = await response.json();
-      // console.log(result);
+      console.log("response", response);
 
       if (response.ok) {
         console.log("Transaction added:", result);
@@ -93,7 +100,9 @@ export default function AddTransaction() {
         </label>
         <select
           value={type}
-          onChange={(e) => setType(e.target.value as "credit" | "debit")}
+          onChange={(e) =>
+            setType(e.target.value as "credit" | "debit" | "transfer")
+          }
           className="w-full p-2 border rounded"
         >
           <option value="debit">Debit</option>
@@ -145,7 +154,7 @@ export default function AddTransaction() {
         <select
           value={categoryId ?? ""}
           onChange={(e) => {
-            console.warn(e.target.value);
+            // console.warn(e.target.value);
             setCategoryId(+e.target.value);
           }}
           className="w-full p-2 border rounded"

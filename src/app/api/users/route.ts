@@ -16,17 +16,32 @@ export async function POST(req: Request) {
     );
     const user = userCredential.user;
 
-    // Prisma add user logic
-    const newUser = await prisma.user.create({
-      data: {
-        uid: user.uid, // Use Firebase UID to link it to firebase auth user
-        email,
-        name: username,
-        currentBalance: 0, // Set the initial balance to 0
-      },
+    const newUserAndHousehold = await prisma.$transaction(async (prisma) => {
+      // Create a new household
+      const newHousehold = await prisma.household.create({
+        data: {
+          name: `${username}'s Household`, // Customize the default household name if needed
+        },
+      });
+
+      // Create the user and associate it with the household
+      const newUser = await prisma.user.create({
+        data: {
+          uid: user.uid, // Use Firebase UID to link it to firebase auth user
+          email,
+          name: username,
+          households: {
+            create: {
+              householdId: newHousehold.id,
+            },
+          },
+        },
+      });
+
+      return { newHousehold, newUser };
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    return NextResponse.json(newUserAndHousehold, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
     return NextResponse.json(

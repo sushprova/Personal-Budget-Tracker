@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { type, amount, categoryId, description, userId, date } = body;
-    console.log(body);
+    // console.log("bodyyy", body);
 
     // Server-side validation
     if (!type || !amount || !categoryId || !description || !userId || !date) {
@@ -27,7 +27,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save transaction to database
     const transaction = await prisma.transaction.create({
       data: {
         type,
@@ -52,39 +51,48 @@ export async function POST(req: Request) {
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const userId = searchParams.get("userId");
-    const limit = searchParams.get("limit") ?? 50;
-    const offset = Number(searchParams.get("offset")) || 0;
-
-    console.log(userId);
-
-    if (!userId || Number(userId) <= 0) {
+    const householdId = searchParams.get("householdId");
+    const limit = parseInt(searchParams.get("limit") ?? "50", 10);
+    const offset = parseInt(searchParams.get("offset") ?? "0", 10);
+    // console.log("householdId", householdId);
+    if (
+      !householdId ||
+      isNaN(Number(householdId)) ||
+      Number(householdId) <= 0
+    ) {
       return NextResponse.json(
-        { message: "User ID is required." },
+        { message: "Invalid or missing household ID." },
         { status: 400 }
       );
     }
 
-    // query options
-    const queryOptions: any = {
-      where: { userId: +userId },
-      include: { category: true },
-      orderBy: { createdAt: Prisma.SortOrder.desc },
-      take: Number(limit),
+    // Query options
+
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        category: {
+          householdId: +householdId,
+        },
+      },
+      include: {
+        category: true,
+        user: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: limit,
       skip: offset,
-    };
+    });
 
-    // if (limit) {
-    //   queryOptions.take = Number(limit); // Only fetch the specified number of transactions
-    // }
-
-    const transactions = await prisma.transaction.findMany(queryOptions);
+    // const transactions = await prisma.transaction.findMany(queryOptions);
 
     return NextResponse.json(transactions, { status: 200 });
   } catch (error) {
     console.error("Error fetching transactions:", error);
+
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Internal Server Error", error: String(error) },
       { status: 500 }
     );
   }

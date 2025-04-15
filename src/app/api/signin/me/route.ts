@@ -13,12 +13,19 @@ export async function GET() {
   if (!decoded)
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-  const user = await prisma.user.findUnique({
+  const userWithHouseholds = await prisma.user.findUnique({
     where: { uid: decoded.user_id as string },
+    include: {
+      households: {
+        include: {
+          household: true, // Include the household details
+        },
+      },
+    },
   });
 
-  if (!user)
+  if (!userWithHouseholds)
     return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  return NextResponse.json({ user });
+  return NextResponse.json({ userWithHouseholds });
 }

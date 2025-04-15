@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  filterCurrentMonthTransactions,
-  getMonthlyTotals,
+  filterCurrentMonthTransactionsForHousehold,
+  getMonthlyTotalsForHousehold,
 } from "@/app/utils/transactionHelpers";
 import { useEffect, useState } from "react";
 import { ResponsivePie } from "@nivo/pie";
@@ -75,7 +75,7 @@ export default function Dashboard() {
       color: "",
     },
   ]);
-  const { user } = useAuth();
+  const { user, selectedHousehold } = useAuth();
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -84,11 +84,20 @@ export default function Dashboard() {
         if (!user) {
           return;
         }
-        const res = await fetch(`/api/transaction?userId=${user.id}`);
+        const res = await fetch(
+          `/api/transaction?householdId=${selectedHousehold!.id}`
+        );
         const transactions = await res.json();
+        console.log("Transactions:", transactions);
 
-        const currentMonthTx = filterCurrentMonthTransactions(transactions);
-        const pieData = getMonthlyTotals(currentMonthTx);
+        const currentMonthTx = filterCurrentMonthTransactionsForHousehold(
+          transactions,
+          selectedHousehold!.id
+        );
+        const pieData = getMonthlyTotalsForHousehold(
+          currentMonthTx,
+          selectedHousehold!.id
+        );
         setData(pieData);
       } catch (err: unknown) {
         setError(err.message);

@@ -24,18 +24,20 @@ const HomePage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, selectedHousehold } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!user) {
+        if (!selectedHousehold) {
           return;
         }
         const transactionsRes = await fetch(
-          `/api/transaction?userId=${user.id}`
+          `/api/transaction?householdId=${selectedHousehold.id}`
         );
-        const categoriesRes = await fetch(`/api/categories`);
+        const categoriesRes = await fetch(
+          `/api/categories?householdId=${selectedHousehold.id}`
+        );
 
         if (!transactionsRes.ok || !categoriesRes.ok) {
           throw new Error("Failed to fetch data");

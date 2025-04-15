@@ -1,5 +1,12 @@
 "use client";
-import { Folder, Home, Plus, Search, Settings } from "lucide-react";
+import {
+  Folder,
+  Home,
+  Plus,
+  ChartColumnBig,
+  Settings,
+  UserRound,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -34,13 +41,18 @@ const items = [
     icon: Folder,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Stats",
+    url: "/stats",
+    icon: ChartColumnBig,
+  },
+  {
+    title: "Household",
+    url: "/household",
+    icon: UserRound,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/settings",
     icon: Settings,
   },
 ];

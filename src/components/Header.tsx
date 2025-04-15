@@ -1,10 +1,13 @@
 "use client";
+import { useAuth } from "@/app/context/AuthContext";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function Header({ showLogout }: { showLogout: boolean }) {
   const router = useRouter();
+  const { households, selectedHousehold, setSelectedHousehold } = useAuth();
+  console.log({ households, selectedHousehold });
 
   const handleLogout = async () => {
     try {
@@ -26,10 +29,34 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
     }
   };
 
+  const handleHouseholdChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedId = parseInt(event.target.value, 10);
+    const selected =
+      households?.find((household) => household.id === selectedId) || null;
+    setSelectedHousehold(selected);
+  };
+
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-[#0A4F45]">
-      {/* Brand Section */}
       <h1 className="vesto-brand  ">Vésto</h1>
+
+      {households && (
+        <div className="relative">
+          <select
+            value={selectedHousehold?.id || ""}
+            onChange={handleHouseholdChange}
+            className="bg-white text-black px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F05A28]"
+          >
+            {households.map((household) => (
+              <option key={household.id} value={household.id}>
+                {household.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Logout Button */}
       {showLogout && (

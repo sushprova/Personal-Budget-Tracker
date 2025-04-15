@@ -13,30 +13,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Household {
+  id          Int               @id @default(autoincrement())
+  name        String
+  users       HouseholdUser[]   // Relation to HouseholdUser
+  categories  Category[]        // Relation to Category
+  goals       Goal[]            // Relation to Goal
+}
+
+model HouseholdUser {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  householdId  Int
+  user         User      @relation(fields: [userId], references: [id])
+  household    Household @relation(fields: [householdId], references: [id])
+  @@unique([userId, householdId]) // Composite unique key
+}
+
 model User {
-  uid            String          @unique
   id             Int             @id @default(autoincrement())
+  uid            String          @unique
   name           String
   email          String          @unique
-  currentBalance Decimal
   createdAt      DateTime        @default(now())
-  categories     Category[]
-  transactions   Transaction[]
-  goals          Goal[]
+  transactions   Transaction[]   // Relation to transactions
+  households     HouseholdUser[] // Relation to HouseholdUser
 }
 
 enum CategoryType {
   debit
   credit
+  transfer
 }
 
 model Category {
-  id          Int             @id @default(autoincrement())
-  userId      Int
-  name        String          @unique
-  createdAt   DateTime        @default(now())
-  type        CategoryType?    // New field with enum type
-  user        User            @relation(fields: [userId], references: [id])
+  id           Int             @id @default(autoincrement())
+  householdId  Int
+  name         String
+  createdAt    DateTime        @default(now())
+  type         CategoryType?
+  household    Household       @relation(fields: [householdId], references: [id])
   transactions Transaction[]
 }
 
@@ -56,10 +72,10 @@ model Transaction {
 
 model Goal {
   id           Int             @id @default(autoincrement())
-  userId       Int
+  householdId       Int
   name         String
   targetAmount Decimal
   currentAmount Decimal
   createdAt    DateTime        @default(now())
-  user         User            @relation(fields: [userId], references: [id])
+  household    Household       @relation(fields: [householdId], references: [id])
 }

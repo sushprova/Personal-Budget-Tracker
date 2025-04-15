@@ -29,18 +29,18 @@ export default function TransactionHistory({
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const { user, selectedHousehold } = useAuth();
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        if (!user) {
+        if (!user || !selectedHousehold) {
           return;
         }
 
-        console.log("Fetching transactions for user:", user);
+        console.log("Fetching transactions for user:", selectedHousehold);
         const response = await fetch(
-          `/api/transaction?userId=${user.id}&limit=${limit}`
+          `/api/transaction?householdId=${selectedHousehold.id}&limit=${limit}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch transactions");

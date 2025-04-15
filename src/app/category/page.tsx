@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
 export default function CategoriesPage() {
-  const { user } = useAuth();
+  const { selectedHousehold } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState<{
     name: string;
@@ -16,7 +16,15 @@ export default function CategoriesPage() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch("/api/categories");
+        if (!selectedHousehold?.id) {
+          console.error("No household found for user");
+          return;
+        }
+
+        // Fetch categories based on householdId
+        const res = await fetch(
+          `/api/categories?householdId=${selectedHousehold.id}`
+        );
         if (!res.ok) throw new Error("Failed to fetch categories");
         const data = await res.json();
         setCategories(data);
@@ -26,7 +34,7 @@ export default function CategoriesPage() {
     }
 
     fetchCategories();
-  }, []);
+  }, [selectedHousehold]);
 
   // Handle form submission for new category
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +46,7 @@ export default function CategoriesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newCategory.name,
-          userId: user!.id,
+          householdId: selectedHousehold!.id,
         }),
       });
 
