@@ -88,51 +88,56 @@ export default function Household() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Household</h1>
-      <Tabs defaultValue="create" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="create">Create New Household</TabsTrigger>
-          <TabsTrigger value="addMember">Add New Member</TabsTrigger>
-        </TabsList>
+    user &&
+    selectedHousehold && (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Household</h1>
+        <Tabs defaultValue="create" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="create">Create New Household</TabsTrigger>
+            <TabsTrigger value="addMember">Add New Member</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="create">
-          <Card>
-            <CardContent>
-              <h2 className="text-xl font-semibold mb-2">
-                Create New Household
-              </h2>
-              <Input
-                placeholder="Enter household name"
-                value={newHouseholdName}
-                onChange={(e) => setNewHouseholdName(e.target.value)}
-                className="mb-4"
-              />
-              <Button onClick={handleCreateHousehold}>Create Household</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
+          <TabsContent value="create">
+            <Card>
+              <CardContent>
+                <h2 className="text-xl font-semibold mb-2">
+                  Create New Household
+                </h2>
+                <Input
+                  placeholder="Enter household name"
+                  value={newHouseholdName}
+                  onChange={(e) => setNewHouseholdName(e.target.value)}
+                  className="mb-4"
+                />
+                <Button onClick={handleCreateHousehold}>
+                  Create Household
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="addMember">
-          <Card>
-            <CardContent>
-              <h2 className="text-xl font-semibold mb-2">Add New Member</h2>
-              <Input
-                placeholder="Enter new member's email"
-                value={memberEmail}
-                onChange={(e) => setMemberEmail(e.target.value)}
-                className="mb-4"
-              />
-              <Button
-                onClick={handleAddMember}
-                disabled={isLoading || !memberEmail}
-              >
-                {isLoading ? "Adding..." : "Add Member"}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+          <TabsContent value="addMember">
+            <Card>
+              <CardContent>
+                <h2 className="text-xl font-semibold mb-2">Add New Member</h2>
+                <Input
+                  placeholder="Enter new member's email"
+                  value={memberEmail}
+                  onChange={(e) => setMemberEmail(e.target.value)}
+                  className="mb-4"
+                />
+                <Button
+                  onClick={handleAddMember}
+                  disabled={isLoading || !memberEmail}
+                >
+                  {isLoading ? "Adding..." : "Add Member"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    )
   );
 }

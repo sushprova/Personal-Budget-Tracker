@@ -6,7 +6,9 @@ import React from "react";
 
 export default function Header({ showLogout }: { showLogout: boolean }) {
   const router = useRouter();
-  const { households, selectedHousehold, setSelectedHousehold } = useAuth();
+  const { user, households, selectedHousehold, setSelectedHousehold, refresh } =
+    useAuth();
+
   console.log({ households, selectedHousehold });
 
   const handleLogout = async () => {
@@ -20,6 +22,7 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
 
       if (response.ok) {
         router.push("/login"); // Redirect on successful logout
+        location.reload();
       } else {
         alert("Logout failed. Please try again.");
       }
@@ -36,13 +39,17 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
     const selected =
       households?.find((household) => household.id === selectedId) || null;
     setSelectedHousehold(selected);
+    location.reload();
   };
-
+  console.log("header:", { selectedHousehold });
+  if (!selectedHousehold) {
+    refresh();
+  }
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-[#0A4F45]">
       <h1 className="vesto-brand  ">Vésto</h1>
 
-      {households && (
+      {!!user?.id && households && (
         <div className="relative">
           <select
             value={selectedHousehold?.id || ""}

@@ -4,9 +4,15 @@ import TransactionHistory from "@/components/TransactionHistory";
 import SpendingGraph from "../components/SpendingGraph";
 import { useRouter } from "next/navigation";
 import CurrentPieLoading from "@/components/currentPieLoading";
+import { useAuth } from "./context/AuthContext";
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useAuth();
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <>

@@ -4,13 +4,17 @@ import { useAuth } from "@/app/context/AuthContext";
 import { Category } from "@prisma/client";
 import { useEffect, useState } from "react";
 
-export default function AddTransaction() {
+export default function AddRecurringTransaction() {
   const [type, setType] = useState<"credit" | "debit" | "transfer">("debit");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryId, setCategoryId] = useState<number | null>(null); // Selected category state
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [recurrenceType, setRecurrenceType] = useState<
+    "daily" | "weekly" | "monthly"
+  >("monthly");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { user, selectedHousehold } = useAuth();
 
@@ -21,15 +25,12 @@ export default function AddTransaction() {
           // alert("Please select a household before adding a transaction.");
           return;
         }
-        console.log("Selected Household:", selectedHousehold);
         const response = await fetch(
           `/api/categories?householdId=${selectedHousehold!.id}`
         );
         const data = await response.json();
-        // console.log("oyeeeee", data);
-        // different way to get the name cause categories array is of type string and not category
-        setCategories(data); // console.log(categories);
-        setCategoryId(data?.[0]?.id); // Set the first category as the default
+        setCategories(data);
+        setCategoryId(data?.[0]?.id); // Default to the first category
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -39,19 +40,25 @@ export default function AddTransaction() {
   }, [selectedHousehold]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("handleSubmit triggered!", e);
-    console.warn({
-      request: JSON.stringify({
-        type,
-        amount: parseFloat(amount),
-        categoryId,
-        description,
-        userId: user!.id,
-        date,
-      }),
-    });
+    e.preventDefault();
+    if (!selectedHousehold) {
+      alert("Please select a household before adding a transaction.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const response = await fetch("/api/transaction", {
+      // const oneYearFromNow = new Date();
+      // oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+      // const finalEndDate = endDate
+      //   ? new Date(endDate) < oneYearFromNow
+      //     ? new Date(endDate)
+      //     : oneYearFromNow
+      //   : oneYearFromNow;
+
+      const response = await fetch("/api/recurring", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,31 +67,32 @@ export default function AddTransaction() {
           type,
           amount: parseFloat(amount),
           categoryId,
-          description,
           userId: user!.id,
-          date,
+          description,
+          recurrenceType,
+          startDate,
+          endDate: endDate || null,
         }),
       });
 
       const result = await response.json();
-      console.log("response", response);
-
+      console.log("Resultyyyy:", result);
       if (response.ok) {
-        console.log("Transaction added!");
-        alert("Transaction successfully added!");
-        // Reset form fields after successful submission
-        // setAmount("");
-        // setDescription("");
-        // setCategoryId(null);
-        // setDate("");
+        alert("Recurring transaction successfully added!");
+        // Reset form fields
+        setAmount("");
+        setDescription("");
+        setCategoryId(null);
+        setRecurrenceType("monthly");
+        setStartDate("");
+        setEndDate(null);
       } else {
-        console.error("Error adding transaction:", result.message);
-        alert("Failed to add transaction. Please try again.");
+        console.error("Error adding recurring transaction:", result.message);
+        alert("Failed to add recurring transaction. Please try again.");
       }
     } catch (error) {
-      alert("Transaction added.");
       console.error("Error:", error);
-      // alert("An error occurred. Please try again.");
+      alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -93,12 +101,7 @@ export default function AddTransaction() {
   return (
     <form onSubmit={handleSubmit} className="max-w-md">
       <div className="mb-4">
-        <label
-          className="all-heading  block mb-2 "
-          style={{ fontSize: "1.3rem" }}
-        >
-          Transaction Type
-        </label>
+        <label className="block mb-2 font-semibold">Transaction Type</label>
         <select
           value={type}
           onChange={(e) =>
@@ -113,12 +116,7 @@ export default function AddTransaction() {
       </div>
 
       <div className="mb-4">
-        <label
-          className="all-heading block mb-2"
-          style={{ fontSize: "1.3rem" }}
-        >
-          Amount
-        </label>
+        <label className="block mb-2 font-semibold">Amount</label>
         <input
           type="number"
           value={amount}
@@ -130,34 +128,10 @@ export default function AddTransaction() {
       </div>
 
       <div className="mb-4">
-        <label
-          className="all-heading block mb-2"
-          style={{ fontSize: "1.3rem" }}
-        >
-          Transaction Date
-        </label>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          className="all-heading  block mb-2 "
-          style={{ fontSize: "1.3rem" }}
-        >
-          Category
-        </label>
+        <label className="block mb-2 font-semibold">Category</label>
         <select
           value={categoryId ?? ""}
-          onChange={(e) => {
-            // console.warn(e.target.value);
-            setCategoryId(+e.target.value);
-          }}
+          onChange={(e) => setCategoryId(+e.target.value)}
           className="w-full p-2 border rounded"
         >
           {categories && categories.length > 0 ? (
@@ -173,12 +147,7 @@ export default function AddTransaction() {
       </div>
 
       <div className="mb-4">
-        <label
-          className="all-heading block mb-2"
-          style={{ fontSize: "1.3rem" }}
-        >
-          Description
-        </label>
+        <label className="block mb-2 font-semibold">Description</label>
         <input
           type="text"
           value={description}
@@ -189,13 +158,49 @@ export default function AddTransaction() {
         />
       </div>
 
+      <div className="mb-4">
+        <label className="block mb-2 font-semibold">Recurrence Type</label>
+        <select
+          value={recurrenceType}
+          onChange={(e) =>
+            setRecurrenceType(e.target.value as "daily" | "weekly" | "monthly")
+          }
+          className="w-full p-2 border rounded"
+        >
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="block mb-2 font-semibold">Start Date</label>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="w-full p-2 border rounded"
+          required
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block mb-2 font-semibold">End Date (Optional)</label>
+        <input
+          type="date"
+          value={endDate || ""}
+          onChange={(e) => setEndDate(e.target.value || null)}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
       <button
         type="submit"
         className="all-heading w-half bg-[#6ca9a0] text-[#0A4F45] py-2 px-4 rounded hover:bg-[#149e8a]"
         style={{ fontSize: "1.3rem" }}
         disabled={loading}
       >
-        {loading ? "Adding..." : "Add Transaction"}
+        {loading ? "Adding..." : "Add Recurring Transaction"}
       </button>
     </form>
   );

@@ -38,6 +38,8 @@ model User {
   createdAt      DateTime        @default(now())
   transactions   Transaction[]   // Relation to transactions
   households     HouseholdUser[] // Relation to HouseholdUser
+  recurringTransactions   RecurringTransaction[]   // Relation to transactions
+
 }
 
 enum CategoryType {
@@ -54,11 +56,13 @@ model Category {
   type         CategoryType?
   household    Household       @relation(fields: [householdId], references: [id])
   transactions Transaction[]
+  RecurringTransaction RecurringTransaction[]
 }
 
 model Transaction {
   id         Int             @id @default(autoincrement())
   userId     Int
+  recurringTransactionId Int?
   amount     Decimal
   type       String
   categoryId Int?
@@ -68,6 +72,25 @@ model Transaction {
   updatedAt  DateTime        @updatedAt
   user       User            @relation(fields: [userId], references: [id])
   category   Category?       @relation(fields: [categoryId], references: [id])
+  recurringTransaction RecurringTransaction?  @relation(fields: [recurringTransactionId], references: [id])
+}
+
+model RecurringTransaction {
+  id             Int       @id @default(autoincrement())
+  userId     Int
+  amount         Decimal
+  type       String
+  note       String?
+  categoryId     Int
+  recurrenceType String    // e.g., "daily", "weekly", "monthly"
+  startDate      DateTime
+  endDate        DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  user           User      @relation(fields: [userId], references: [id])
+  category       Category  @relation(fields: [categoryId], references: [id])
+
+  Transaction Transaction[]
 }
 
 model Goal {

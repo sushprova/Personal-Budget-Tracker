@@ -17,7 +17,7 @@ export default function CategoriesPage() {
     async function fetchCategories() {
       try {
         if (!selectedHousehold?.id) {
-          console.error("No household found for user");
+          console.warn("No household found for user");
           return;
         }
 

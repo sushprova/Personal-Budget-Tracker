@@ -9,6 +9,7 @@ import {
   SetStateAction,
 } from "react";
 import { User, Household } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 const AuthContext = createContext<{
   user: User | null;
@@ -17,6 +18,7 @@ const AuthContext = createContext<{
   setUser: Dispatch<SetStateAction<User | null>>;
   setHouseholds: Dispatch<SetStateAction<Household[] | null>>;
   setSelectedHousehold: Dispatch<SetStateAction<Household | null>>;
+  refresh: () => void;
 } | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -26,43 +28,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     null
   );
 
+  async function fetchUserAndHouseholds() {
+    try {
+      const res = await fetch("/api/signin/me");
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Fetched user and households:", data);
+        setUser(data.userWithHouseholds);
+        const fetchedHouseholds = data.userWithHouseholds.households.map(
+          (h: any) => h.household
+        );
+
+        setHouseholds(fetchedHouseholds);
+
+        // Check localStorage for previously selected household
+        const storedHouseholdId = localStorage.getItem("selectedHouseholdId");
+        const persistedHousehold =
+          fetchedHouseholds.find(
+            (household: Household) =>
+              household.id === parseInt(storedHouseholdId || "", 10)
+          ) || fetchedHouseholds[0]; // Default to the first household
+
+        setSelectedHousehold(persistedHousehold);
+        localStorage.setItem(
+          "selectedHouseholdId",
+          String(persistedHousehold.id)
+        );
+      } else {
+        setUser(null);
+        setHouseholds(null);
+        setSelectedHousehold(null);
+        redirect("/login");
+      }
+    } catch (error) {
+      redirect("/login");
+      console.error("Error fetching user and households:", error);
+    }
+  }
+
   useEffect(() => {
     // Fetch user and households
-    async function fetchUserAndHouseholds() {
-      try {
-        const res = await fetch("/api/signin/me");
-        if (res.ok) {
-          const data = await res.json();
-          console.log("Fetched user and households:", data);
-          setUser(data.userWithHouseholds);
-          const fetchedHouseholds = data.userWithHouseholds.households.map(
-            (h: any) => h.household
-          );
-
-          setHouseholds(fetchedHouseholds);
-
-          // Check localStorage for previously selected household
-          const storedHouseholdId = localStorage.getItem("selectedHouseholdId");
-          const persistedHousehold =
-            fetchedHouseholds.find(
-              (household: Household) =>
-                household.id === parseInt(storedHouseholdId || "", 10)
-            ) || fetchedHouseholds[0]; // Default to the first household
-
-          setSelectedHousehold(persistedHousehold);
-          localStorage.setItem(
-            "selectedHouseholdId",
-            String(persistedHousehold.id)
-          );
-        } else {
-          setUser(null);
-          setHouseholds(null);
-          setSelectedHousehold(null);
-        }
-      } catch (error) {
-        console.error("Error fetching user and households:", error);
-      }
-    }
 
     fetchUserAndHouseholds();
   }, []);
@@ -72,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (selectedHousehold) {
       localStorage.setItem("selectedHouseholdId", String(selectedHousehold.id));
     }
+    // location.reload();
   }, [selectedHousehold]);
 
   return (
@@ -83,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser,
         setHouseholds,
         setSelectedHousehold,
+        refresh: fetchUserAndHouseholds,
       }}
     >
       {children}
