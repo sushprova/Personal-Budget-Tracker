@@ -44,7 +44,7 @@ export default function RenameHousehold() {
       } else {
         alert(result.message || "Failed to rename household.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error renaming household:", error);
       alert("An error occurred. Please try again.");
     } finally {

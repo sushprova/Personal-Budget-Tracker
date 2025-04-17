@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating recurring transaction:", error);
     return NextResponse.json(
       { message: "Internal server error", error: error.message },

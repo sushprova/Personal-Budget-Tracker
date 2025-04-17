@@ -47,7 +47,7 @@ export default function TransactionHistory({
         }
         const data = await response.json();
         setTransactions(data);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
@@ -77,7 +77,7 @@ export default function TransactionHistory({
       );
 
       console.log("Transaction deleted:", id);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting transaction:", error);
     }
   };

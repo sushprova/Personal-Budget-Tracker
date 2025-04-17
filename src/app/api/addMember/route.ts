@@ -59,7 +59,7 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error adding member to household:", error);
     return NextResponse.json(
       { message: "Internal server error." },

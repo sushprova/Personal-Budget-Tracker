@@ -28,7 +28,7 @@ export default function CategoriesPage() {
         if (!res.ok) throw new Error("Failed to fetch categories");
         const data = await res.json();
         setCategories(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
       }
     }
@@ -55,7 +55,7 @@ export default function CategoriesPage() {
       const createdCategory = await res.json();
       setCategories((prevCategories) => [...prevCategories, createdCategory]); // Update state
       setNewCategory({ name: "" }); // means if a user does not select, it will be debit by default
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
     }
   };

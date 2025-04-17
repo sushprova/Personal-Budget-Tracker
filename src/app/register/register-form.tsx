@@ -48,7 +48,7 @@ export function RegisterForm({
         const errorData = await response.json();
         setError(errorData.message || "Registration failed.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("An unexpected error occurred:", err);
       setError("An unexpected error occurred. Please try again.");
     }

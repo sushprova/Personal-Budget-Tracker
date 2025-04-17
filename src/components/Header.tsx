@@ -26,7 +26,7 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
       } else {
         alert("Logout failed. Please try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during logout:", error);
       alert("An error occurred during logout.");
     }

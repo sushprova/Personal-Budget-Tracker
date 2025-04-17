@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(transaction, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating transaction:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     // const transactions = await prisma.transaction.findMany(queryOptions);
 
     return NextResponse.json(transactions, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching transactions:", error);
 
     return NextResponse.json(

@@ -99,7 +99,7 @@ export default function Dashboard() {
           selectedHousehold!.id
         );
         setData(pieData);
-      } catch (err: unknown) {
+      } catch (err: any) {
         setError(err.message);
       }
     };

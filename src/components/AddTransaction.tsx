@@ -30,7 +30,7 @@ export default function AddTransaction() {
         // different way to get the name cause categories array is of type string and not category
         setCategories(data); // console.log(categories);
         setCategoryId(data?.[0]?.id); // Set the first category as the default
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching categories:", error);
       }
     };
@@ -81,7 +81,7 @@ export default function AddTransaction() {
         console.error("Error adding transaction:", result.message);
         alert("Failed to add transaction. Please try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       alert("Transaction added.");
       console.error("Error:", error);
       // alert("An error occurred. Please try again.");

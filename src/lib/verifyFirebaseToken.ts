@@ -19,7 +19,7 @@ export async function verifyFirebaseToken(token: string) {
     });
 
     return payload;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Token verification failed", error);
     return null;
   }

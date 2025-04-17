@@ -31,7 +31,7 @@ export default function AddRecurringTransaction() {
         const data = await response.json();
         setCategories(data);
         setCategoryId(data?.[0]?.id); // Default to the first category
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching categories:", error);
       }
     };
@@ -90,7 +90,7 @@ export default function AddRecurringTransaction() {
         console.error("Error adding recurring transaction:", result.message);
         alert("Failed to add recurring transaction. Please try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
       alert("An error occurred. Please try again.");
     } finally {

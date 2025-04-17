@@ -25,7 +25,7 @@ export async function PATCH(req: Request) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error renaming household:", error);
     return NextResponse.json(
       { message: "Internal server error." },

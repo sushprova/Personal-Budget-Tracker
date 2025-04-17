@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSelectedHousehold(null);
         redirect("/login");
       }
-    } catch (error) {
+    } catch (error: any) {
       redirect("/login");
       console.error("Error fetching user and households:", error);
     }

@@ -46,7 +46,7 @@ export default function Household() {
           result.message || "Failed to create household. Please try again."
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating household:", error);
       alert("An error occurred while creating the household.");
     }
@@ -79,7 +79,7 @@ export default function Household() {
       } else {
         alert(result.message || "Failed to add member. Please try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding member:", error);
       alert("An error occurred while adding the member.");
     } finally {
