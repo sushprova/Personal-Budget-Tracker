@@ -6,6 +6,7 @@ import {
   ChartColumnBig,
   Settings,
   UserRound,
+  CopyPlus,
 } from "lucide-react";
 
 import {
@@ -34,6 +35,11 @@ const items = [
     title: "Add Transaction",
     url: "/add",
     icon: Plus,
+  },
+  {
+    title: "Recurring Transaction",
+    url: "/recurring",
+    icon: CopyPlus,
   },
   {
     title: "Category",

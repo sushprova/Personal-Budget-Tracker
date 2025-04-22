@@ -43,6 +43,9 @@ export async function createTransactions(
     date: date,
   }));
 
+  console.log("Generated dates:", dates);
+  console.log("Transactions to be created:", transactions);
+
   // Use Prisma to create all transactions in the database
   await prisma.transaction.createMany({ data: transactions });
 }

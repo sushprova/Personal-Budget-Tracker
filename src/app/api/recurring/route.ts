@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/client";
 import {
   createTransactions,
@@ -90,6 +90,56 @@ export async function POST(req: Request) {
     console.error("Error creating recurring transaction:", error);
     return NextResponse.json(
       { message: "Internal server error", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const householdId = searchParams.get("householdId");
+    // const limit = parseInt(searchParams.get("limit") ?? "50", 10);
+    // const offset = parseInt(searchParams.get("offset") ?? "0", 10);
+    // console.log("householdId", householdId);
+    if (
+      !householdId ||
+      isNaN(Number(householdId)) ||
+      Number(householdId) <= 0
+    ) {
+      return NextResponse.json(
+        { message: "Invalid or missing household ID." },
+        { status: 400 }
+      );
+    }
+
+    // Query options
+
+    const recurringTransactions = await prisma.recurringTransaction.findMany({
+      where: {
+        category: {
+          householdId: +householdId,
+        },
+      },
+      include: {
+        category: true,
+        user: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      // take: limit,
+      // skip: offset,
+    });
+
+    // const transactions = await prisma.transaction.findMany(queryOptions);
+
+    return NextResponse.json(recurringTransactions, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching transactions:", error);
+
+    return NextResponse.json(
+      { message: "Internal Server Error", error: String(error) },
       { status: 500 }
     );
   }
