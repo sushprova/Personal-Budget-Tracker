@@ -98,31 +98,35 @@ export default function TransactionHistory({
       <div className="bg-white rounded-lg shadow">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-100 ">
+            <thead
+              style={{ backgroundColor: "#6EBEA5" }}
+              className="vesto-brand "
+            >
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   Start Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   End Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   Recurrence Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
                   Description
                 </th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-gray-200">
               {transactions.map((transaction) => (
                 <tr key={transaction.id}>

@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = context;
   const { id } = await params;
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");

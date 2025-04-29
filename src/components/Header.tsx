@@ -52,10 +52,14 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
           <select
             value={selectedHousehold?.id || ""}
             onChange={handleHouseholdChange}
-            className="bg-white text-black px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F05A28]"
+            className="vesto-brand text-[22px] rounded border border-[#6EBEA5]"
           >
             {households.map((household) => (
-              <option key={household.id} value={household.id}>
+              <option
+                key={household.id}
+                value={household.id}
+                className="text-[18px]"
+              >
                 {household.name}
               </option>
             ))}

@@ -29,6 +29,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   async function fetchUserAndHouseholds() {
+    if (typeof window !== "undefined") {
+      // Exclude specific pages from redirecting
+      const excludedPaths = ["/register", "/forgot-password"];
+      if (
+        excludedPaths.some((path) => window.location.pathname.startsWith(path))
+      ) {
+        return;
+      }
+    }
     try {
       const res = await fetch("/api/signin/me");
       if (res.ok) {
@@ -67,8 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    // Fetch user and households
-
     fetchUserAndHouseholds();
   }, []);
 

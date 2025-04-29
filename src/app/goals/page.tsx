@@ -5,11 +5,13 @@ import { Goal } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import AddGoal from "@/components/AddGoal";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const { user, selectedHousehold } = useAuth();
   const [addGoalsFormToggle, setAddGoalsFormToggle] = useState(false);
 
@@ -20,17 +22,14 @@ export default function GoalsPage() {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        if (!user || !selectedHousehold) {
-          return;
-        }
+        if (!user || !selectedHousehold) return;
 
         console.log("Fetching goals:", selectedHousehold);
         const response = await fetch(
           `/api/goals?householdId=${selectedHousehold.id}`
         );
-        if (!response.ok) {
-          throw new Error("Failed to fetch goals");
-        }
+        if (!response.ok) throw new Error("Failed to fetch goals");
+
         const data = await response.json();
         setGoals(data);
       } catch (err: any) {
@@ -49,7 +48,8 @@ export default function GoalsPage() {
 
   return (
     <main className="p-8 pb-24">
-      <h1 className="text-2xl font-bold mb-6">Financial Goals</h1>
+      <h1 className="vesto-brand">Financial Goals</h1>
+
       {!addGoalsFormToggle && (
         <Button onClick={toggleAddGoals}>Add Goal</Button>
       )}
@@ -63,27 +63,45 @@ export default function GoalsPage() {
 
       {!addGoalsFormToggle && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          {goals.map((goal) => (
-            <div
-              key={goal.id}
-              className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-between"
-              style={{ borderColor: "#0A4A45", borderWidth: "3px" }}
-            >
-              <h2 className="text-lg font-semibold mb-2 text-gray-800">
-                {goal.name.toLocaleUpperCase()}
-              </h2>
-              <div className="text-sm text-gray-500">
-                <p>
-                  <span className="font-medium">Current Amount:</span> $
-                  {Number(goal.currentAmount.toString()).toFixed(2)}
-                </p>
-                <p>
-                  <span className="font-medium">Target Amount:</span> $
-                  {Number(goal.targetAmount.toString()).toFixed(2)}
-                </p>
+          {goals.map((goal) => {
+            const completionPercentage = Math.ceil(
+              (Number(goal.currentAmount) / Number(goal.targetAmount)) * 100
+            );
+
+            return (
+              <div
+                key={goal.id}
+                className="vesto-brand bg-[#d4f4ea] rounded-lg shadow-md p-6 flex flex-col justify-between items-center"
+                style={{ borderColor: "#0A4A45", borderWidth: "3px" }}
+              >
+                <h2 className="text-[20px] font-semibold mb-4 text-[#0A4A45]">
+                  {goal.name.toLocaleUpperCase()}
+                </h2>
+                <div className="text-[18px] text-[#0A4A45] mb-4">
+                  <p>
+                    <span className="font-medium">Current Amount:</span> $
+                    {Number(goal.currentAmount.toString()).toFixed(2)}
+                  </p>
+                  <p>
+                    <span className="font-medium">Target Amount:</span> $
+                    {Number(goal.targetAmount.toString()).toFixed(2)}
+                  </p>
+                </div>
+                <div className="w-24 h-24">
+                  <CircularProgressbar
+                    value={completionPercentage}
+                    text={`${completionPercentage.toFixed(0)}%`}
+                    styles={buildStyles({
+                      pathColor: "#0A4A45",
+                      textColor: "#0A4A45",
+                      trailColor: "#d4f4ea",
+                      textSize: "16px",
+                    })}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </main>

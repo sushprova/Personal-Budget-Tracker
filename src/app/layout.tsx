@@ -32,7 +32,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pagesWithoutSidebar = ["/login", "/register"];
+  const pagesWithoutSidebar = ["/login", "/register", "/forgot-password"];
   const pathname = usePathname();
   const shouldShowSidebar = !pagesWithoutSidebar.includes(pathname);
 

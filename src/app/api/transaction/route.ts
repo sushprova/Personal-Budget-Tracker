@@ -68,11 +68,24 @@ export async function GET(req: NextRequest) {
 
     // Query options
 
+    const today = new Date();
+
     const transactions = await prisma.transaction.findMany({
       where: {
-        category: {
-          householdId: +householdId,
-        },
+        AND: [
+          { category: { householdId: +householdId } },
+          {
+            OR: [
+              { recurringTransactionId: null },
+              {
+                AND: [
+                  { recurringTransactionId: { not: null } },
+                  { date: { lte: today } },
+                ],
+              },
+            ],
+          },
+        ],
       },
       include: {
         category: true,
