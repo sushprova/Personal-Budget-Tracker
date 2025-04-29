@@ -114,6 +114,7 @@ export default function TransactionHistory({
                 <tr key={transaction.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {new Date(transaction.date).toLocaleDateString("en-US", {
+                      timeZone: "UTC",
                       year: "numeric",
                       month: "long",
                       day: "numeric",

@@ -77,6 +77,7 @@ export async function POST(req: Request) {
       categoryId,
       note: description,
       type,
+      recurringId: recurringTransaction.id,
     });
 
     return NextResponse.json(

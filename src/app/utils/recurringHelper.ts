@@ -31,6 +31,7 @@ export async function createTransactions(
     amount: Decimal;
     categoryId: number;
     note?: string;
+    recurringId: number;
     type: "credit" | "debit" | "transfer";
   }
 ) {
@@ -41,6 +42,7 @@ export async function createTransactions(
     note: transactionDetails.note || null,
     type: transactionDetails.type,
     date: date,
+    recurringTransactionId: transactionDetails.recurringId,
   }));
 
   console.log("Generated dates:", dates);

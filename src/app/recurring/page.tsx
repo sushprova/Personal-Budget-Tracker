@@ -61,16 +61,20 @@ export default function TransactionHistory({
     fetchTransactions();
   }, [user]);
 
-  const deleteTransaction = async (id: number) => {
+  const deleteTransaction = async (
+    id: number,
+    deleteType: "all" | "future"
+  ) => {
     try {
       if (!user) {
-        console.error("User is not authenticated.");
         return;
       }
-      const response = await fetch(`/api/transaction/${id}?userId=${user.id}`, {
-        method: "DELETE",
-      });
-      console.log("Response status:", response);
+      const response = await fetch(
+        `/api/recurring/${id}?userId=${user.id}&deleteType=${deleteType}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete transaction");
@@ -80,7 +84,7 @@ export default function TransactionHistory({
         prevTransactions.filter((tx) => tx.id !== id)
       );
 
-      console.log("Transaction deleted:", id);
+      console.log(`Transaction deleted (${deleteType}):`, id);
     } catch (error: any) {
       console.error("Error deleting transaction:", error);
     }
@@ -126,6 +130,7 @@ export default function TransactionHistory({
                     {new Date(transaction.startDate).toLocaleDateString(
                       "en-US",
                       {
+                        timeZone: "UTC",
                         year: "numeric",
                         month: "long",
                         day: "numeric",
@@ -134,6 +139,8 @@ export default function TransactionHistory({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {new Date(transaction.endDate).toLocaleDateString("en-US", {
+                      timeZone: "UTC",
+
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -166,7 +173,7 @@ export default function TransactionHistory({
                     {transaction.note}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {/* Add the dropdown menu for each row */}
+                    {/* Add the dropdown menu for each row from here */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="text-blue-500">
@@ -182,12 +189,24 @@ export default function TransactionHistory({
                         <DropdownMenuItem
                           onClick={() => {
                             const confirmed = window.confirm(
-                              "This action will permanently delete this transaction. Want to proceed?"
+                              "This action will permanently delete all transactions. Want to proceed?"
                             );
-                            if (confirmed) deleteTransaction(transaction.id);
+                            if (confirmed)
+                              deleteTransaction(transaction.id, "all");
                           }}
                         >
-                          Delete
+                          Delete All Transactions
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            const confirmed = window.confirm(
+                              "This action will permanently delete only future transactions. Want to proceed?"
+                            );
+                            if (confirmed)
+                              deleteTransaction(transaction.id, "future");
+                          }}
+                        >
+                          Delete Future Transactions
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

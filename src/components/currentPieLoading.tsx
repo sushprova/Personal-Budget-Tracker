@@ -61,6 +61,25 @@ export function MonthlyPieChart({ data }: PieChartProps) {
             ],
           },
         ]}
+        theme={{
+          labels: {
+            text: {
+              fontSize: 16,
+            },
+          },
+          legends: {
+            text: {
+              fontSize: 14,
+            },
+          },
+          axis: {
+            legend: {
+              text: {
+                fontSize: 14,
+              },
+            },
+          },
+        }}
       />
     </div>
   );

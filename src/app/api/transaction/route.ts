@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
         user: true,
       },
       orderBy: {
-        createdAt: "desc",
+        date: "desc",
       },
       take: limit,
       skip: offset,

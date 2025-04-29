@@ -5,7 +5,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = await params;
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
   if (!userId) {

@@ -9,8 +9,6 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
   const { user, households, selectedHousehold, setSelectedHousehold, refresh } =
     useAuth();
 
-  console.log({ households, selectedHousehold });
-
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/logout", {
@@ -41,7 +39,7 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
     setSelectedHousehold(selected);
     location.reload();
   };
-  console.log("header:", { selectedHousehold });
+  console.log("header:", { households, selectedHousehold });
   if (!selectedHousehold) {
     refresh();
   }

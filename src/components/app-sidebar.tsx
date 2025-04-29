@@ -57,6 +57,11 @@ const items = [
     icon: UserRound,
   },
   {
+    title: "Goal",
+    url: "/goals",
+    icon: UserRound,
+  },
+  {
     title: "Settings",
     url: "/settings",
     icon: Settings,
