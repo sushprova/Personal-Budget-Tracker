@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { calculateTotalDebit } from "@/app/utils/totalDebit";
 import { prisma } from "@/lib/client";
 import { Prisma, Transaction } from "@prisma/client";
-import { skip } from "@prisma/client/runtime/library";
 import { NextRequest, NextResponse } from "next/server";
 import { off } from "process";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { type, amount, categoryId, description, userId, date } = body;
-    // console.log("bodyyy", body);
+    const { type, amount, categoryId, goalId, description, userId, date } =
+      body;
 
     // Server-side validation
-    if (!type || !amount || !categoryId || !description || !userId || !date) {
+    if (!type || !amount || !description || !userId || !date) {
       return NextResponse.json(
         { message: "All fields are required." },
         { status: 400 }
@@ -27,18 +27,81 @@ export async function POST(req: Request) {
       );
     }
 
-    const transaction = await prisma.transaction.create({
-      data: {
-        type,
-        amount: new Prisma.Decimal(amount),
-        categoryId,
-        note: description,
-        userId,
-        date: new Date(date),
-      },
-    });
+    if (type === "transfer" && !goalId) {
+      return NextResponse.json(
+        { message: "Goal ID is required for transfer transactions." },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json(transaction, { status: 201 });
+    if (type === "transfer") {
+      // Fetch the goal and validate
+      const goal = await prisma.goal.findUnique({
+        where: { id: goalId },
+      });
+
+      if (!goal) {
+        return NextResponse.json(
+          { message: "Goal not found." },
+          { status: 404 }
+        );
+      }
+
+      // Calculate total debit for the household
+      const totalDebit = await calculateTotalDebit(goal.householdId);
+
+      if (totalDebit < amount) {
+        return NextResponse.json(
+          { message: "Insufficient debit balance to complete the transfer." },
+          { status: 400 }
+        );
+      }
+
+      // Create the transfer transaction
+      const transaction = await prisma.transaction.create({
+        data: {
+          type,
+          amount: new Prisma.Decimal(amount),
+          note: description,
+          userId,
+          date: new Date(date),
+          goalId,
+        },
+      });
+
+      // Update the goal's balance
+      const updatedGoal = await prisma.goal.update({
+        where: { id: goalId },
+        data: {
+          currentAmount: {
+            increment: new Prisma.Decimal(amount),
+          },
+        },
+      });
+
+      return NextResponse.json(
+        {
+          transaction,
+          updatedGoal,
+          totalDebitAfter: totalDebit - amount, // Optional: return remaining debit balance
+        },
+        { status: 201 }
+      );
+    } else {
+      // Handle credit or debit transactions
+      const transaction = await prisma.transaction.create({
+        data: {
+          type,
+          amount: new Prisma.Decimal(amount),
+          categoryId,
+          note: description,
+          userId,
+          date: new Date(date),
+        },
+      });
+
+      return NextResponse.json(transaction, { status: 201 });
+    }
   } catch (error: any) {
     console.error("Error creating transaction:", error);
     return NextResponse.json(
@@ -73,7 +136,13 @@ export async function GET(req: NextRequest) {
     const transactions = await prisma.transaction.findMany({
       where: {
         AND: [
-          { category: { householdId: +householdId } },
+          {
+            OR: [
+              { category: { householdId: +householdId } },
+              { goal: { householdId: +householdId } },
+              { type: "transfer" }, // Include transfer transactions explicitly
+            ],
+          },
           {
             OR: [
               { recurringTransactionId: null },
@@ -90,6 +159,7 @@ export async function GET(req: NextRequest) {
       include: {
         category: true,
         user: true,
+        goal: true,
       },
       orderBy: {
         date: "desc",

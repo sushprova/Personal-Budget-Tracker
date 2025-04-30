@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { Category } from "@prisma/client";
+import { Category, Goal } from "@prisma/client";
 import CurrentPieLoading from "./currentPieLoading";
 
 interface Transaction {
@@ -17,6 +17,7 @@ interface Transaction {
   amount: number;
   note: string;
   date: string;
+  goal: Goal;
   category: Category;
 }
 
@@ -135,7 +136,7 @@ export default function TransactionHistory({
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {transaction.category?.name || "No category"}
+                    {transaction.category?.name || transaction.goal?.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     ${transaction.amount}

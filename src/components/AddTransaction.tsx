@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/app/context/AuthContext";
-import { Category } from "@prisma/client";
+import { Category, Goal } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 export default function AddTransaction() {
@@ -10,46 +10,45 @@ export default function AddTransaction() {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryId, setCategoryId] = useState<number | null>(null); // Selected category state
+  const [goals, setGoals] = useState<Goal[]>([]); // State to hold goals
+  const [categoryOrGoalId, setCategoryOrGoalId] = useState<number | null>(null); // Selected category or goal
   const [loading, setLoading] = useState(false);
   const { user, selectedHousehold } = useAuth();
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
+      if (!selectedHousehold) return;
+
       try {
-        if (!selectedHousehold) {
-          // alert("Please select a household before adding a transaction.");
-          return;
+        if (type === "transfer") {
+          // Fetch goals for the household
+          const response = await fetch(
+            `/api/goals?householdId=${selectedHousehold.id}`
+          );
+          const data = await response.json();
+          setGoals(data);
+          setCategoryOrGoalId(data?.[0]?.id ?? null); // Default to the first goal
+        } else {
+          // Fetch categories for the household
+          const response = await fetch(
+            `/api/categories?householdId=${selectedHousehold.id}`
+          );
+          const data = await response.json();
+          setCategories(data);
+          setCategoryOrGoalId(data?.[0]?.id ?? null); // Default to the first category
         }
-        console.log("Selected Household:", selectedHousehold);
-        const response = await fetch(
-          `/api/categories?householdId=${selectedHousehold!.id}`
-        );
-        const data = await response.json();
-        // console.log("oyeeeee", data);
-        // different way to get the name cause categories array is of type string and not category
-        setCategories(data); // console.log(categories);
-        setCategoryId(data?.[0]?.id); // Set the first category as the default
-      } catch (error: any) {
-        console.error("Error fetching categories:", error);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchCategories();
-  }, [selectedHousehold]);
+    fetchData();
+  }, [selectedHousehold, type]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("handleSubmit triggered!", e);
-    console.warn({
-      request: JSON.stringify({
-        type,
-        amount: parseFloat(amount),
-        categoryId,
-        description,
-        userId: user!.id,
-        date,
-      }),
-    });
+    e.preventDefault();
+    setLoading(true);
+
     try {
       const response = await fetch("/api/transaction", {
         method: "POST",
@@ -59,7 +58,8 @@ export default function AddTransaction() {
         body: JSON.stringify({
           type,
           amount: parseFloat(amount),
-          categoryId,
+          categoryId: type === "transfer" ? undefined : categoryOrGoalId,
+          goalId: type === "transfer" ? categoryOrGoalId : undefined,
           description,
           userId: user!.id,
           date,
@@ -67,24 +67,19 @@ export default function AddTransaction() {
       });
 
       const result = await response.json();
-      console.log("response", response);
-
+      // console.log("Transaction result:", result);
       if (response.ok) {
-        console.log("Transaction added!");
         alert("Transaction successfully added!");
-        // Reset form fields after successful submission
-        // setAmount("");
-        // setDescription("");
-        // setCategoryId(null);
-        // setDate("");
+        setAmount("");
+        setDescription("");
+        setCategoryOrGoalId(null);
+        setDate("");
       } else {
-        console.error("Error adding transaction:", result.message);
-        alert("Failed to add transaction. Please try again.");
+        alert(`Failed to add transaction: ${result.message}`);
       }
-    } catch (error: any) {
-      alert("Transaction added.");
-      console.error("Error:", error);
-      // alert("An error occurred. Please try again.");
+    } catch (error) {
+      console.error("Error submitting transaction:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -94,7 +89,7 @@ export default function AddTransaction() {
     <form onSubmit={handleSubmit} className="max-w-md">
       <div className="mb-4">
         <label
-          className="all-heading  block mb-2 "
+          className="all-heading block mb-2"
           style={{ fontSize: "1.3rem" }}
         >
           Transaction Type
@@ -147,20 +142,27 @@ export default function AddTransaction() {
 
       <div className="mb-4">
         <label
-          className="all-heading  block mb-2 "
+          className="all-heading block mb-2"
           style={{ fontSize: "1.3rem" }}
         >
-          Category
+          {type === "transfer" ? "Goal" : "Category"}
         </label>
         <select
-          value={categoryId ?? ""}
-          onChange={(e) => {
-            // console.warn(e.target.value);
-            setCategoryId(+e.target.value);
-          }}
+          value={categoryOrGoalId ?? ""}
+          onChange={(e) => setCategoryOrGoalId(+e.target.value)}
           className="w-full p-2 border rounded"
         >
-          {categories && categories.length > 0 ? (
+          {type === "transfer" ? (
+            goals.length > 0 ? (
+              goals.map((goal) => (
+                <option key={goal.id} value={goal.id}>
+                  {goal.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>Loading goals...</option>
+            )
+          ) : categories.length > 0 ? (
             categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}

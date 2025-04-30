@@ -52,7 +52,7 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
           <select
             value={selectedHousehold?.id || ""}
             onChange={handleHouseholdChange}
-            className="vesto-brand text-[22px] rounded border border-[#6EBEA5]"
+            className="vesto-brand font-normal text-[22px] rounded border border-[#6EBEA5]"
           >
             {households.map((household) => (
               <option

@@ -24,9 +24,7 @@ interface RecurringTransaction {
 interface TransactionHistoryProps {
   limit?: number;
 }
-export default function TransactionHistory({
-  limit = 5,
-}: TransactionHistoryProps) {
+export default function TransactionHistory() {
   const [transactions, setTransactions] = useState<RecurringTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -107,8 +107,8 @@ export default function Dashboard() {
           `/api/transaction?householdId=${selectedHousehold!.id}`
         );
         const transactions = await res.json();
-        console.log("Transactions:", transactions);
-
+        // console.log("Transactions:", transactions);
+        console.warn("Transactions:", transactions);
         const currentMonthTx = filterCurrentMonthTransactionsForHousehold(
           transactions,
           selectedHousehold!.id
