@@ -140,7 +140,6 @@ export async function GET(req: NextRequest) {
             OR: [
               { category: { householdId: +householdId } },
               { goal: { householdId: +householdId } },
-              { type: "transfer" }, // Include transfer transactions explicitly
             ],
           },
           {
