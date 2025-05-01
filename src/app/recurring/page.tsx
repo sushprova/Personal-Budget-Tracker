@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { Category } from "@prisma/client";
+import { Card } from "@/components/ui/card";
 
 interface RecurringTransaction {
   id: number;
@@ -92,9 +93,9 @@ export default function TransactionHistory() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="overflow-x-auto flex justify-center p-4">
+    <Card className="flex justify-center w-[97%] overflow-hidden shadow-md rounded-lg m-4">
       <table
-        className="m-2  w-[90%] rounder-lg border "
+        className="w-[100%] rounded-2xl"
         style={{ borderColor: "#0a4f45" }}
       >
         <thead style={{ backgroundColor: "#6EBEA5" }} className="vesto-brand">
@@ -204,6 +205,6 @@ export default function TransactionHistory() {
           ))}
         </tbody>
       </table>
-    </div>
+    </Card>
   );
 }

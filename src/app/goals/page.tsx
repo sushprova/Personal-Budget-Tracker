@@ -1,12 +1,12 @@
 "use client";
 
+import AddGoal from "@/components/AddGoal";
 import { Button } from "@/components/ui/button";
 import { Goal } from "@prisma/client";
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import AddGoal from "@/components/AddGoal";
+import { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useAuth } from "../context/AuthContext";
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -42,10 +42,6 @@ export default function GoalsPage() {
     fetchGoals();
   }, [user, selectedHousehold]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error while fetching goals!</div>;
-  if (!goals || goals.length < 1) return <div>No goals found!</div>;
-
   return (
     <main className="p-8 pb-24">
       <h1 className="vesto-brand">Financial Goals</h1>
@@ -61,7 +57,13 @@ export default function GoalsPage() {
         </>
       )}
 
-      {!addGoalsFormToggle && (
+      {loading && <div>Loading...</div>}
+      {error && <div>Error while fetching goals!</div>}
+      {!loading && !error && (!goals || goals.length < 1) && (
+        <div>No goals found!</div>
+      )}
+
+      {!addGoalsFormToggle && !loading && !error && goals.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           {goals.map((goal) => {
             const completionPercentage = Math.ceil(

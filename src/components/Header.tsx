@@ -3,6 +3,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { SidebarTrigger } from "./ui/sidebar";
 
 export default function Header({ showLogout }: { showLogout: boolean }) {
   const router = useRouter();
@@ -45,38 +46,45 @@ export default function Header({ showLogout }: { showLogout: boolean }) {
   }
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-[#0A4F45]">
-      <h1 className="vesto-brand  ">Vésto</h1>
+      <h1 className="vesto-brand flex items-center">
+        {showLogout && (
+          <SidebarTrigger className="text-white mr-4 ml-[-1rem]" />
+        )}
+        Vésto
+      </h1>
 
-      {!!user?.id && households && (
-        <div className="relative">
-          <select
-            value={selectedHousehold?.id || ""}
-            onChange={handleHouseholdChange}
-            className="vesto-brand-2 font-normal p-1 text-[20px] rounded border border-[#6EBEA5] hover:bg-[#OA47T5] transition-all"
+      <div className="flex justify-end gap-4 ">
+        {!!user?.id && households && (
+          <div className="relative">
+            <select
+              value={selectedHousehold?.id || ""}
+              onChange={handleHouseholdChange}
+              className="vesto-brand-2 font-normal p-1 text-[20px] rounded border border-[#6EBEA5] hover:bg-[#OA47T5] transition-all"
+            >
+              {households.map((household) => (
+                <option
+                  key={household.id}
+                  value={household.id}
+                  className="text-[18px]"
+                >
+                  {household.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Logout Button */}
+        {showLogout && (
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#F05A28] rounded-md hover:bg-[#e0491e] transition-all"
           >
-            {households.map((household) => (
-              <option
-                key={household.id}
-                value={household.id}
-                className="text-[18px]"
-              >
-                {household.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Logout Button */}
-      {showLogout && (
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#F05A28] rounded-md hover:bg-[#e0491e] transition-all"
-        >
-          <LogOut size={20} />
-          <span>Log out</span>
-        </button>
-      )}
+            <LogOut size={20} />
+            <span>Log out</span>
+          </button>
+        )}
+      </div>
     </header>
   );
 }

@@ -45,9 +45,6 @@ export default function RootLayout({
           <SidebarProvider>
             {shouldShowSidebar && <AppSidebar />}
             <SidebarInset>
-              {shouldShowSidebar && (
-                <SidebarTrigger className="text-[#0A4F45]" />
-              )}
               <Header showLogout={shouldShowSidebar} />
               {children}
             </SidebarInset>

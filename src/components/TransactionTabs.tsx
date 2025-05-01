@@ -10,7 +10,7 @@ export default function TransactionTabs() {
   );
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full ">
       <div className="bg-[#0A4F45] text-[#6ca9a0] rounded-2xl p-6 w-full max-w-2xl shadow-lg">
         {/* Tabs Header */}
         <div className="flex justify-around border-b border-[#6ca9a0] mb-4">
