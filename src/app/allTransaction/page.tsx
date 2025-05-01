@@ -10,11 +10,11 @@ export default function allTransaction() {
         {/* Recent Transactions Section */}
         <section className="mb-8">
           <h2 className="all-heading">Recent Transactions</h2>
-          <TransactionHistory limit={25} />
+          <TransactionHistory limit={500} />
         </section>
-        <button className="vesto-brand-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] ">
+        {/* <button className="vesto-brand-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] ">
           See More
-        </button>
+        </button> */}
       </main>
     </>
   );

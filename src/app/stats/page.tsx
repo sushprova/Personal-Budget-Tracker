@@ -136,6 +136,9 @@ const HomePage: React.FC = () => {
         <DonutChartByType transactions={transactions} categories={categories} />
       </Card>
       <Card className="py-4 mt-4">
+        <div className="text-center mt-4 mb-4 text-lg font-semibold">
+          Daily Totals Overview
+        </div>
         <BarChartComponent data={dailyTotals} />
       </Card>
     </div>

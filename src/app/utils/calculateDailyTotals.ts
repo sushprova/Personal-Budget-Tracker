@@ -16,12 +16,12 @@ export function calculateDailyTotals(
         : transaction.date;
 
     if (transactionDate instanceof Date && !isNaN(transactionDate.getTime())) {
-      // Format date as '30 May, 2025' using UTC
+      // '30 May, 2025' UTC
       const formattedDate = transactionDate.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
-        timeZone: "UTC", // ensure UTC formatting
+        timeZone: "UTC",
       });
 
       if (!dailyTotalsMap[formattedDate]) {
@@ -38,7 +38,6 @@ export function calculateDailyTotals(
     }
   });
 
-  // Return the formatted data
   return Object.entries(dailyTotalsMap).map(([date, totals]) => ({
     date,
     ...totals,

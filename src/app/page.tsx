@@ -36,11 +36,6 @@ export default function Home() {
         >
           See More
         </button>
-        {/* Monthly Graph Section */}
-        <section className="mb-8">
-          <h2 className="all-heading pt-9">Monthly Overview</h2>
-          <SpendingGraph />
-        </section>
 
         {/* <Footer /> */}
       </main>
