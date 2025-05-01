@@ -106,6 +106,7 @@ export default function Dashboard() {
         const res = await fetch(
           `/api/transaction?householdId=${selectedHousehold!.id}`
         );
+        // console.log("Fetching tr", res);
         const transactions = await res.json();
         // console.log("Transactions:", transactions);
         console.warn("Transactions:", transactions);

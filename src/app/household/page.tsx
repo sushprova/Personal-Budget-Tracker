@@ -91,26 +91,41 @@ export default function Household() {
     user &&
     selectedHousehold && (
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Household</h1>
+        <h1 className="vesto-brand text-[#0A4F45] text-[30px] m-2">
+          Household
+        </h1>
         <Tabs defaultValue="create" className="w-full">
           <TabsList className="mb-4">
-            <TabsTrigger value="create">Create New Household</TabsTrigger>
-            <TabsTrigger value="addMember">Add New Member</TabsTrigger>
+            <TabsTrigger
+              className="vesto-brand text-[#0A4F45] text-[18px]"
+              value="create"
+            >
+              Create New Household
+            </TabsTrigger>
+            <TabsTrigger
+              className="vesto-brand text-[#0A4F45] text-[18px]"
+              value="addMember"
+            >
+              Add New Member
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="create">
             <Card>
               <CardContent>
-                <h2 className="text-xl font-semibold mb-2">
+                <h2 className="text-xl font-semibold m-2 vesto-brand text-[22px] text-[#0A4F45]">
                   Create New Household
                 </h2>
                 <Input
                   placeholder="Enter household name"
                   value={newHouseholdName}
                   onChange={(e) => setNewHouseholdName(e.target.value)}
-                  className="mb-4"
+                  className="text-xl font-semibold m-2 vesto-brand text-[22px] text-[#0A4F45]"
                 />
-                <Button onClick={handleCreateHousehold}>
+                <Button
+                  className="vesto-brand-2 m-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] "
+                  onClick={handleCreateHousehold}
+                >
                   Create Household
                 </Button>
               </CardContent>
@@ -120,14 +135,17 @@ export default function Household() {
           <TabsContent value="addMember">
             <Card>
               <CardContent>
-                <h2 className="text-xl font-semibold mb-2">Add New Member</h2>
+                <h2 className="text-xl font-semibold m-2 vesto-brand text-[22px] text-[#0A4F45]">
+                  Add New Member
+                </h2>
                 <Input
                   placeholder="Enter new member's email"
                   value={memberEmail}
                   onChange={(e) => setMemberEmail(e.target.value)}
-                  className="mb-4"
+                  className="text-xl font-semibold m-2 vesto-brand text-[22px] text-[#0A4F45]"
                 />
                 <Button
+                  className="vesto-brand-2 m-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] "
                   onClick={handleAddMember}
                   disabled={isLoading || !memberEmail}
                 >

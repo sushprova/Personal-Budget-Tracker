@@ -63,7 +63,7 @@ const items = [
     icon: Goal,
   },
   {
-    title: "Settings",
+    title: "Household Settings",
     url: "/settings",
     icon: Settings,
   },
@@ -72,11 +72,11 @@ const items = [
 export default function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarContent className="bg-[#0d7263] text-white">
+      <SidebarContent className="bg-[#0d7263] text-white text-[20px]">
         {/* <SidebarGroup> */}
         {/* <SidebarGroupLabel>Menu</SidebarGroupLabel> */}
         {/* <SidebarGroupContent> */}
-        <SidebarMenu>
+        <SidebarMenu className="space-y-2">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>

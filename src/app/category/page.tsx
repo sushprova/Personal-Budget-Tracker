@@ -62,12 +62,9 @@ export default function CategoriesPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Categories</h1>
-
-      {/* Debit Section */}
       <div>
-        <h2 className="text-lg font-semibold">Categories</h2>
-        <ul>
+        <h1 className="vesto-brand text-[#0A4F45] text-[30px]">Categories</h1>
+        <ul className="vesto-brand text-[20px] text-[#0A4F45]">
           {categories.map((category) => (
             <li key={category.id}>{category.name}</li>
           ))}
@@ -88,7 +85,9 @@ export default function CategoriesPage() {
 
       {/* Add New Category Form */}
       <form onSubmit={handleSubmit} className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Add New Category</h3>
+        <h3 className="text-lg font-semibold mb-2 vesto-brand text-[22px] text-[#0A4F45]">
+          Add New Category
+        </h3>
         <input
           type="text"
           placeholder="Category Name"
@@ -112,7 +111,10 @@ export default function CategoriesPage() {
           <option value="debit">Debit</option>
           <option value="credit">Credit</option>
         </select> */}
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        <button
+          type="submit"
+          className="vesto-brand-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] "
+        >
           Add New
         </button>
       </form>

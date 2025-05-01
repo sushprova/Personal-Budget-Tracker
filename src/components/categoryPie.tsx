@@ -6,9 +6,10 @@ import { ResponsivePie } from "@nivo/pie";
 import { colorPool } from "@/app/utils/colorPool";
 import {
   assignColorsToCategories,
+  assignColorsToGoals,
   prepareDonutDataByType,
 } from "@/app/utils/separateCategories";
-import { Category, Transaction } from "@prisma/client";
+import { Category, Goal, Transaction } from "@prisma/client";
 
 const DonutChartByType = ({
   transactions,
@@ -30,7 +31,12 @@ const DonutChartByType = ({
   );
   const transferData = prepareDonutDataByType(
     transactions,
-    categoriesWithColors,
+    assignColorsToGoals(
+      transactions
+        .filter((tx) => tx.type === "transfer")
+        .map((tx: any) => tx.goal) as Goal[],
+      colorPool
+    ),
     "transfer"
   );
   return (
@@ -79,7 +85,7 @@ const DonutChartByType = ({
         />
       </div>
 
-      {/* Debit Chart */}
+      {/* Transfer Chart */}
       <div style={{ height: "400px", width: "400px" }}>
         <h3 className="text-center text-lg font-semibold mb-4">Transfers</h3>
         <ResponsivePie

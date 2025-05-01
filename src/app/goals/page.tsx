@@ -47,7 +47,12 @@ export default function GoalsPage() {
       <h1 className="vesto-brand">Financial Goals</h1>
 
       {!addGoalsFormToggle && (
-        <Button onClick={toggleAddGoals}>Add Goal</Button>
+        <Button
+          className="vesto-brand-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] "
+          onClick={toggleAddGoals}
+        >
+          Add Goal
+        </Button>
       )}
 
       {addGoalsFormToggle && (

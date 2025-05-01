@@ -56,14 +56,17 @@ export default function RenameHousehold() {
     <div className="p-4">
       <Card>
         <CardContent>
-          <h2 className="text-xl font-semibold mb-2">Rename Household</h2>
+          <h2 className="vesto-brand-2 mt-4 font-normal p-1.5 text-[22px] rounded border text-white bg-[#0A4f45]">
+            Rename Household
+          </h2>
           <Input
+            className="mb-4 text-[20px] placeholder:text-[20px]"
             placeholder={`Enter new name for ${selectedHousehold?.name || ""}`}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="mb-4"
           />
           <Button
+            className="vesto-brand-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] "
             onClick={handleRename}
             disabled={isLoading || !newName.trim()}
           >

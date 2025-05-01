@@ -2,7 +2,7 @@
 // src/utils/chartData.js
 // src/utils/colors.js
 
-import { Category } from "@prisma/client";
+import { Category, Goal } from "@prisma/client";
 
 export const assignColorsToCategories = (
   categories: Category[],
@@ -10,7 +10,17 @@ export const assignColorsToCategories = (
 ) => {
   return categories.map((category: any, index: number) => ({
     ...category,
-    color: colorPool[index % colorPool.length], // Assign colors cyclically
+    color: colorPool[Math.floor(Math.random() * colorPool.length)], // Assign colors cyclically
+  }));
+};
+
+export const assignColorsToGoals = (
+  categories: Goal[],
+  colorPool: string[]
+) => {
+  return categories.map((category: any, index: number) => ({
+    ...category,
+    color: colorPool[Math.floor(Math.random() * colorPool.length)], // Assign colors cyclically
   }));
 };
 
