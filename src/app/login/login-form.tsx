@@ -116,13 +116,13 @@ export function LoginForm({
               >
                 Login
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 className="all-heading block mb-2"
                 style={{ fontSize: "1rem" }}
               >
                 Login with Google
-              </Button>
+              </Button> */}
               {error && (
                 <p className="text-red-500 text-sm text-center">{error}</p>
               )}

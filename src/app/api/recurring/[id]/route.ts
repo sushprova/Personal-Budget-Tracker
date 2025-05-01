@@ -54,6 +54,10 @@ export async function DELETE(
           date: { gt: today },
         },
       });
+      await prisma.recurringTransaction.update({
+        where: { id: Number(id) },
+        data: { endDate: today },
+      });
     }
 
     return NextResponse.json(

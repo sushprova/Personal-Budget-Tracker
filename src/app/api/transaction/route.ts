@@ -141,7 +141,10 @@ export async function GET(req: NextRequest) {
         AND: [
           {
             date: {
-              gte: startDate ? new Date(startDate) : addDays(today, -30),
+              gte:
+                startDate && !isNaN(new Date(startDate).getTime())
+                  ? new Date(startDate)
+                  : undefined,
               lte:
                 endDate && !isNaN(new Date(endDate).getTime())
                   ? new Date(endDate)

@@ -74,16 +74,16 @@ export const filterCurrentMonthTransactionsForHousehold = (
   householdId: number
 ) => {
   const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
+  const currentMonth = now.getUTCMonth();
+  const currentYear = now.getUTCFullYear();
 
   return transactions.filter((tx) => {
     const txDate = new Date(tx.date);
     return (
       (tx.category?.householdId === householdId ||
         tx.goal?.householdId === householdId) &&
-      txDate.getMonth() === currentMonth &&
-      txDate.getFullYear() === currentYear
+      txDate.getUTCMonth() === currentMonth &&
+      txDate.getUTCFullYear() === currentYear
     );
   });
 };

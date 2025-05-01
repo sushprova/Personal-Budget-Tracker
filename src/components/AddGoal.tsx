@@ -88,7 +88,7 @@ export default function AddGoal({ defaultValues }: { defaultValues?: Goal }) {
         </label>
         <input
           type="number"
-          value={targetAmount.toFixed(2)}
+          value={targetAmount as number}
           onChange={(e) => setTargetAmount(new Prisma.Decimal(e.target.value))}
           className="w-full p-2 border rounded"
           placeholder="Enter target amount"
@@ -104,7 +104,7 @@ export default function AddGoal({ defaultValues }: { defaultValues?: Goal }) {
         </label>
         <input
           type="number"
-          value={currentAmount.toFixed(2)}
+          value={currentAmount as number}
           onChange={(e) => setCurrentAmount(new Prisma.Decimal(e.target.value))}
           className="w-full p-2 border rounded"
           placeholder="Enter current amount"
