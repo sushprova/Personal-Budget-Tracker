@@ -18,6 +18,8 @@ import { CalendarIcon } from "lucide-react";
 import * as React from "react";
 import { addDays, format } from "date-fns";
 import { Card } from "@/components/ui/card";
+import { calculateDailyTotals } from "../utils/calculateDailyTotals";
+import BarChartComponent from "@/components/bar-chart";
 
 // interface Transaction {
 //   id: number;
@@ -44,6 +46,10 @@ const HomePage: React.FC = () => {
   });
   const { user, selectedHousehold } = useAuth();
 
+  const [dailyTotals, setDailyTotals] = useState<
+    { date: string; debit: number; credit: number }[]
+  >([]);
+
   const fetchData = async () => {
     try {
       if (!selectedHousehold) {
@@ -63,10 +69,14 @@ const HomePage: React.FC = () => {
       }
 
       const transactionsData: Transaction[] = await transactionsRes.json();
+      // console.log("transactionsData", transactionsData);
       const categoriesData: Category[] = await categoriesRes.json();
 
       setTransactions(transactionsData);
       setCategories(categoriesData);
+
+      const totals = calculateDailyTotals(transactionsData);
+      setDailyTotals(totals);
     } catch (err: any) {
       setError(err.message || "An unknown error occurred");
     } finally {
@@ -125,8 +135,8 @@ const HomePage: React.FC = () => {
       <Card className="py-4">
         <DonutChartByType transactions={transactions} categories={categories} />
       </Card>
-      <Card className="py-4">
-        <DonutChartByType transactions={transactions} categories={categories} />
+      <Card className="py-4 mt-4">
+        <BarChartComponent data={dailyTotals} />
       </Card>
     </div>
   );
