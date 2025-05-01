@@ -92,133 +92,118 @@ export default function TransactionHistory() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
-      <div className="bg-white rounded-lg shadow">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead
-              style={{ backgroundColor: "#6EBEA5" }}
-              className="vesto-brand "
-            >
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  Start Date
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  End Date
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  Type
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  Recurrence Type
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
-                  Description
-                </th>
-              </tr>
-            </thead>
+    <div className="overflow-x-auto flex justify-center p-4">
+      <table
+        className="m-2  w-[90%] rounder-lg border "
+        style={{ borderColor: "#0a4f45" }}
+      >
+        <thead style={{ backgroundColor: "#6EBEA5" }} className="vesto-brand">
+          <tr>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              Start Date
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              End Date
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              Type
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              Recurrence Type
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              Category
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              Amount
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-white uppercase">
+              Description
+            </th>
+          </tr>
+        </thead>
 
-            <tbody className="divide-y divide-gray-200">
-              {transactions.map((transaction) => (
-                <tr key={transaction.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {new Date(transaction.startDate).toLocaleDateString(
-                      "en-US",
-                      {
-                        timeZone: "UTC",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      }
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {new Date(transaction.endDate).toLocaleDateString("en-US", {
-                      timeZone: "UTC",
+        <tbody className="divide-y divide-gray-200">
+          {transactions.map((transaction) => (
+            <tr key={transaction.id}>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {new Date(transaction.startDate).toLocaleDateString("en-US", {
+                  timeZone: "UTC",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {new Date(transaction.endDate).toLocaleDateString("en-US", {
+                  timeZone: "UTC",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </td>
 
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        transaction.type === "credit"
-                          ? "bg-red-100 text-red-800"
-                          : transaction.type === "debit"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    transaction.type === "credit"
+                      ? "bg-red-100 text-red-800"
+                      : transaction.type === "debit"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {transaction.type}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {transaction.recurrenceType}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {transaction.category?.name || "No category"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                ${transaction.amount}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {transaction.note}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="text-blue-500">
+                      <MoreVertical className="h-5 w-5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const confirmed = window.confirm(
+                          "This action will permanently delete all transactions. Want to proceed?"
+                        );
+                        if (confirmed) deleteTransaction(transaction.id, "all");
+                      }}
                     >
-                      {transaction.type}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {transaction.recurrenceType}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {transaction.category?.name || "No category"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    ${transaction.amount}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {transaction.note}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {/* Add the dropdown menu for each row from here */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="text-blue-500">
-                          <MoreVertical className="h-5 w-5" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        {/* <DropdownMenuItem
-                        onClick={() => console.log("Editing:", transaction)}
-                      >
-                        Edit
-                      </DropdownMenuItem> */}
-                        <DropdownMenuItem
-                          onClick={() => {
-                            const confirmed = window.confirm(
-                              "This action will permanently delete all transactions. Want to proceed?"
-                            );
-                            if (confirmed)
-                              deleteTransaction(transaction.id, "all");
-                          }}
-                        >
-                          Delete All Transactions
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            const confirmed = window.confirm(
-                              "This action will permanently delete only future transactions. Want to proceed?"
-                            );
-                            if (confirmed)
-                              deleteTransaction(transaction.id, "future");
-                          }}
-                        >
-                          Delete Future Transactions
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
+                      Delete All Transactions
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const confirmed = window.confirm(
+                          "This action will permanently delete only future transactions. Want to proceed?"
+                        );
+                        if (confirmed)
+                          deleteTransaction(transaction.id, "future");
+                      }}
+                    >
+                      Delete Future Transactions
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

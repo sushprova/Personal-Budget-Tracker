@@ -30,7 +30,8 @@ export default function Home() {
           <TransactionHistory />
         </section>
         <button
-          className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+          className=" vesto-brand-2 mt-4 font-normal p-1.5 text-[18px] rounded border text-white bg-[#0A4f45] 
+          >"
           onClick={() => router.push("/allTransaction")}
         >
           See More
