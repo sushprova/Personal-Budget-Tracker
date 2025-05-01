@@ -101,6 +101,19 @@ body {
     color: rgb(110, 190, 165); /* Equivalent to text-white */
   }
 
+  .vesto-brand-2 {
+    font-family: "Montserrat", serif;
+    font-size: 2.5rem; /* Equivalent to text-xl */
+    font-weight: 600; /* Equivalent to font-semibold */
+    color: rgb(10, 79, 69); /* Equivalent to text-white */
+  }
+
+  *,
+  body,
+  html {
+    font-family: "Montserrat", serif;
+  }
+
   .all-heading {
     font-family: "Montserrat", serif;
     color: rgb(92, 157, 137);

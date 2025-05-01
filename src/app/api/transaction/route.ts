@@ -3,6 +3,7 @@
 import { calculateTotalDebit } from "@/app/utils/totalDebit";
 import { prisma } from "@/lib/client";
 import { Prisma, Transaction } from "@prisma/client";
+import { addDays } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { off } from "process";
 
@@ -115,6 +116,8 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const householdId = searchParams.get("householdId");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
     const limit = parseInt(searchParams.get("limit") ?? "50", 10);
     const offset = parseInt(searchParams.get("offset") ?? "0", 10);
     // console.log("householdId", householdId);
@@ -136,6 +139,15 @@ export async function GET(req: NextRequest) {
     const transactions = await prisma.transaction.findMany({
       where: {
         AND: [
+          {
+            date: {
+              gte: startDate ? new Date(startDate) : addDays(today, -30),
+              lte:
+                endDate && !isNaN(new Date(endDate).getTime())
+                  ? new Date(endDate)
+                  : undefined,
+            },
+          },
           {
             OR: [
               { category: { householdId: +householdId } },

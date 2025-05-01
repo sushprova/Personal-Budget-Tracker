@@ -7,6 +7,7 @@ import {
   Settings,
   UserRound,
   CopyPlus,
+  Goal,
 } from "lucide-react";
 
 import {
@@ -59,7 +60,7 @@ const items = [
   {
     title: "Goal",
     url: "/goals",
-    icon: UserRound,
+    icon: Goal,
   },
   {
     title: "Settings",

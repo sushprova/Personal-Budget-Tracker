@@ -24,17 +24,19 @@ export const prepareDonutDataByType = (
 
   transactions
     .filter((tx: { type: any }) => tx.type === type)
-    .forEach((tx: { category: { name: any }; amount: any }) => {
-      const categoryName = tx.category.name;
-      if (!categoryTotals[categoryName]) {
-        categoryTotals[categoryName] = { value: 0, color: "#000000" };
+    .forEach(
+      (tx: { category: { name: any }; goal: { name: any }; amount: any }) => {
+        const categoryName = tx.category?.name ?? tx.goal?.name;
+        if (!categoryTotals[categoryName]) {
+          categoryTotals[categoryName] = { value: 0, color: "#000000" };
+        }
+        categoryTotals[categoryName].value += +tx.amount;
+        categoryTotals[categoryName].color =
+          categoriesWithColors.find(
+            (cat: { name: any }) => cat.name === categoryName
+          )?.color || "#000000";
       }
-      categoryTotals[categoryName].value += +tx.amount;
-      categoryTotals[categoryName].color =
-        categoriesWithColors.find(
-          (cat: { name: any }) => cat.name === categoryName
-        )?.color || "#000000";
-    });
+    );
 
   return Object.keys(categoryTotals).map((categoryName) => ({
     id: categoryName,
