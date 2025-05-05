@@ -1,3 +1,4 @@
+//caclculate daily debit and credit totals
 import { Decimal } from "@prisma/client/runtime/library";
 
 export function calculateDailyTotals(

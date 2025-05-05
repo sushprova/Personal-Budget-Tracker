@@ -1,5 +1,6 @@
+//handles redirection to login
 import { NextRequest, NextResponse } from "next/server";
-import { verifyFirebaseToken } from "@/lib/verifyFirebaseToken"; // ✅ use your util
+import { verifyFirebaseToken } from "@/lib/verifyFirebaseToken";
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("session")?.value;

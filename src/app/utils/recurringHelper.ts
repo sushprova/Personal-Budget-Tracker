@@ -1,3 +1,4 @@
+//creates the dates for recurringga nd pushes the transactions for those dates in db
 import { prisma } from "@/lib/client";
 import { Decimal } from "@prisma/client/runtime/library";
 

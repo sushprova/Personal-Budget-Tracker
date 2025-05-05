@@ -1,3 +1,4 @@
+//user and householdds are being used as token to before loading any sensitive info
 "use client";
 
 import {
